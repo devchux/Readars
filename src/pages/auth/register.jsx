@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Input, Link, Text } from '@chakra-ui/react'
 import React from 'react'
+import { Link as ReactLink } from "react-router-dom";
 
 const Register = () => {
   return (
@@ -13,7 +14,7 @@ const Register = () => {
         <Input type="password" placeholder="Enter Password" />
       </Box>
       <Box>
-        <Text>Already have an account? <Link href="/auth" color="teal.500">Login</Link></Text>
+        <Text>Already have an account? <Link  as={ReactLink} to="/auth" color="teal.500">Login</Link></Text>
       </Box>
       <Box>
         <Button isLoading={false} colorScheme="teal">Register</Button>
