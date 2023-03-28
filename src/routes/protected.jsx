@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useApp } from "../hooks/useApp";
 
 const Protected = ({ children }) => {
   const { getToken } = useApp();
@@ -12,7 +13,7 @@ const Protected = ({ children }) => {
     } else {
       setCanAccess(true);
     }
-  }, [user, token]);
+  }, [token]);
 
   if (canAccess === null) return <div />;
 
