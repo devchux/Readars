@@ -1,4 +1,17 @@
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 export const useApp = () => {
+    const navigate = useNavigate();
+  const backendAPI = "https://readers-api.onrender.com/api/v1";
+
+  const errorHandler = (error, message) => {
+    let res = message || "An error occurred";
+
+    return toast.error(res);
+  };
+
   const storeToken = (token) => {
     const d = new Date();
     d.setTime(d.getTime() + 24 * 60 * 60 * 1000);
@@ -20,5 +33,76 @@ export const useApp = () => {
     document.cookie = "userToken=; Max-Age=-99999999;";
   };
 
-  return { storeToken, getToken, eraseToken };
+  const logout = () => {
+    eraseToken();
+    // setUser({});
+    localStorage.clear();
+    navigate("/auth");
+  };
+
+  const register = async (body) => {
+    const { data } = await axios.post(`${backendAPI}/users/register/`, body);
+
+    storeToken(data?.data?.token);
+
+    return data;
+  };
+
+  const login = async (body) => {
+    const { data } = await axios.post(`${backendAPI}/users/login/`, { ...body });
+
+    storeToken(data?.data?.token);
+
+    return data;
+  };
+
+  const createBook = async (body) => {
+    const { data } = await axios.post(
+      `${backendAPI}/books/create_book/`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  };
+
+  const getBooks = async () => {
+    const { data } = await axios.get(`${backendAPI}/books/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${getToken()}`,
+      },
+    });
+
+    return data;
+  };
+
+  const getBook = async (id) => {
+    const { data } = await axios.get(`${backendAPI}/books/get_book?id=${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${getToken()}`,
+      },
+    });
+
+    return data;
+  };
+
+  return {
+    storeToken,
+    getToken,
+    eraseToken,
+    register,
+    login,
+    errorHandler,
+    createBook,
+    getBooks,
+    getBook,
+    logout,
+  };
 };

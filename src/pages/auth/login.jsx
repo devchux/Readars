@@ -10,9 +10,14 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-formid";
-import { Link as ReactLink } from "react-router-dom";
+import { useMutation } from "react-query";
+import validator from "validator";
+import { Link as ReactLink, useNavigate } from "react-router-dom";
+import { useApp } from "../../hooks/useApp";
 
 const Login = () => {
+  const { login, errorHandler } = useApp();
+  const navigate = useNavigate();
   const { handleSubmit, getFieldProps, errors } = useForm({
     defaultValues: {
       email: "",
@@ -31,7 +36,16 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data) => console.log(data);
+  const { mutate, isLoading } = useMutation(login, {
+    onSuccess() {
+      navigate("/app");
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
+  const onSubmit = (data) => mutate(data);
 
   return (
     <Flex
@@ -69,7 +83,12 @@ const Login = () => {
         </Text>
       </Box>
       <Box>
-        <Button type="submit" isLoading={false} colorScheme="teal">
+        <Button
+          type="submit"
+          isLoading={isLoading}
+          disabled={isLoading}
+          colorScheme="teal"
+        >
           Login
         </Button>
       </Box>

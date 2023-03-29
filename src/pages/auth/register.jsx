@@ -10,9 +10,14 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-formid";
-import { Link as ReactLink } from "react-router-dom";
+import { useMutation } from "react-query";
+import validator from "validator";
+import { Link as ReactLink, useNavigate } from "react-router-dom";
+import { useApp } from "../../hooks/useApp";
 
 const Register = () => {
+  const { register, error } = useApp();
+  const navigate = useNavigate();
   const { handleSubmit, getFieldProps, errors } = useForm({
     defaultValues: {
       first_name: "",
@@ -44,7 +49,18 @@ const Register = () => {
     },
   });
 
-  const onSubmit = (data) => console.log(data);
+  const { mutate, isLoading } = useMutation(register, {
+    onSuccess() {
+      navigate("/app");
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
+  console.log(isLoading)
+
+  const onSubmit = (data) => mutate(data);
 
   return (
     <Flex
@@ -82,9 +98,7 @@ const Register = () => {
           placeholder="Enter Email"
           {...getFieldProps("email")}
         />
-        {errors.email && (
-          <FormErrorMessage>{errors.email}</FormErrorMessage>
-        )}
+        {errors.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
       </FormControl>
       <FormControl isInvalid={!!errors.password}>
         <Text>Password</Text>
@@ -117,7 +131,12 @@ const Register = () => {
         </Text>
       </Box>
       <Box>
-        <Button type="submit" isLoading={false} colorScheme="teal">
+        <Button
+          type="submit"
+          isLoading={isLoading}
+          disabled={isLoading}
+          colorScheme="teal"
+        >
           Register
         </Button>
       </Box>

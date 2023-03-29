@@ -14,6 +14,7 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
@@ -31,7 +32,7 @@ const Publish = () => {
       </Box>
       <Box mt="14" px={{ base: "1", lg: "8"}}>
         <Heading fontSize="xl" mb="4">
-          My Books
+          Recent Books
         </Heading>
         <Grid
           gridTemplateColumns={{
@@ -96,8 +97,8 @@ const Publish = () => {
               <Input type="text" placeholder="Enter Book Title" />
             </Box>
             <Box mb="4">
-              <Text mb="2">Amount (in Naira)</Text>
-              <Input type="number" placeholder="Enter Amount" />
+              <Text mb="2">Description</Text>
+              <Textarea />
             </Box>
             <Box mb="4">
               <Text mb="2">Book Thumbnail</Text>

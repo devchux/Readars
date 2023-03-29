@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Image,
+  Link,
   Skeleton,
   SkeletonText,
   Text,
@@ -51,8 +52,7 @@ const Content = ({ isLoading }) => {
               <Heading fontSize="3xl" mb="4">
                 Things Fall Apart
               </Heading>
-              <Text mb="2">By Chinua Achebe</Text>
-              <Text>Price: &#8358;5,000.00</Text>
+              <Text>By Chinua Achebe</Text>
             </>
           )}
           <Box mt={{ base: "8", md: "32" }}>
@@ -87,7 +87,7 @@ const Content = ({ isLoading }) => {
                   w="80px"
                 />
               ) : (
-                <Button>Buy Now</Button>
+                <Link target="_blank" color="teal.500" href="https://google.com/lol">View Document</Link>
               )}
             </Box>
           </Box>

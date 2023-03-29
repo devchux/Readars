@@ -21,7 +21,8 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.9.0",
     "react-toastify": "^9.1.2",
-    "sass": "^1.60.0"
+    "sass": "^1.60.0",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
