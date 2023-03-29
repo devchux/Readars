@@ -108,7 +108,7 @@ export const useApp = () => {
   };
 
   const getBooks = async () => {
-    const { data } = await axios.get(`${backendAPI}/books/`, {
+    const { data } = await axios.get(`https://readers-api.onrender.com/books/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `JWT ${getToken()}`,

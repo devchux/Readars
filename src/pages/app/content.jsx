@@ -11,7 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useApp } from "../../hooks/useApp";
@@ -31,6 +31,7 @@ const Content = () => {
 
   const { mutate, isLoading: suscribeLoading } = useMutation(subscribe, {
     onSuccess() {
+      localStorage.setItem({ ...userData, subscribed: true });
       toast.success("User is suscribed");
     },
     onError(err) {

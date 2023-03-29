@@ -16,7 +16,6 @@ const Home = () => {
     }
   );
 
-  console.log(books);
   return (
     <Box mt="14" px="8">
       <Grid
@@ -27,7 +26,7 @@ const Home = () => {
         }}
         gap="8"
       >
-        {books?.result?.map((book) => (
+        {books?.map((book) => (
           <Feed
             key={book.id}
             id={book?.id}

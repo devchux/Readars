@@ -42,18 +42,19 @@ const Publish = () => {
     closeModal();
   };
 
-  const { data: books, isLoading: loadingBooks } = useQuery(
-    ["BOOKS"],
-    getBooks,
-    {
-      onError(err) {
-        errorHandler(err);
-      },
-    }
-  );
+  const {
+    data: books,
+    isLoading: loadingBooks,
+    refetch,
+  } = useQuery(["BOOKS"], getBooks, {
+    onError(err) {
+      errorHandler(err);
+    },
+  });
 
   const { mutate, isLoading } = useMutation(createBook, {
     onSuccess() {
+      refetch();
       toast.success("Book has been added");
       onClose();
     },
@@ -85,7 +86,7 @@ const Publish = () => {
           }}
           gap="8"
         >
-          {books?.result?.map((book) => (
+          {books?.map((book) => (
             <Feed
               key={book.id}
               id={book?.id}
