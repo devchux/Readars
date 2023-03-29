@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const useApp = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const backendAPI = "https://readers-api.onrender.com/api/v1";
 
   const convertBase64 = (file) => {
@@ -22,7 +22,7 @@ export const useApp = () => {
   };
 
   const errorHandler = (error, message) => {
-    console.log(error.response)
+    console.log(error.response);
     let res = message || "An error occurred";
 
     return toast.error(res);
@@ -51,7 +51,6 @@ export const useApp = () => {
 
   const logout = () => {
     eraseToken();
-    // setUser({});
     localStorage.clear();
     navigate("/auth");
   };
@@ -59,13 +58,19 @@ export const useApp = () => {
   const register = async (body) => {
     const { data } = await axios.post(`${backendAPI}/users/register/`, body);
 
+    localStorage.setItem("user", JSON.stringify(data?.data));
+
     storeToken(data?.data?.token);
 
     return data;
   };
 
   const login = async (body) => {
-    const { data } = await axios.post(`${backendAPI}/users/login/`, { ...body });
+    const { data } = await axios.post(`${backendAPI}/users/login/`, {
+      ...body,
+    });
+
+    localStorage.setItem("user", JSON.stringify(data?.data));
 
     storeToken(data?.data?.token);
 
@@ -75,6 +80,21 @@ export const useApp = () => {
   const createBook = async (body) => {
     const { data } = await axios.post(
       `${backendAPI}/books/create_book/`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${getToken()}`,
+        },
+      }
+    );
+
+    return data;
+  };
+
+  const subscribe = async (body) => {
+    const { data } = await axios.post(
+      `${backendAPI}/books/create_user_subscription/`,
       body,
       {
         headers: {
@@ -121,5 +141,6 @@ export const useApp = () => {
     getBook,
     logout,
     convertBase64,
+    subscribe,
   };
 };

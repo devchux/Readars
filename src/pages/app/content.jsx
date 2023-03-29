@@ -13,18 +13,51 @@ import {
 import React from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useApp } from "../../hooks/useApp";
 
 const Content = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { getBook, errorHandler } = useApp();
+  const { getBook, errorHandler, subscribe } = useApp();
+  const userStorage = localStorage.getItem("user");
+  const userData = userStorage ? JSON.parse(userStorage) : null;
 
   const { data, isLoading } = useQuery(["BOOKS", id], () => getBook(id), {
     onError(err) {
       errorHandler(err);
     },
   });
+
+  const { mutate, isLoading: suscribeLoading } = useMutation(subscribe, {
+    onSuccess() {
+      toast.success("User is suscribed");
+    },
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
+  const payKorapay = () => {
+    window.Korapay.initialize({
+      key: "pk_test_tuWZmPBJbmmz1EG5zeCyyshcaToUnJWidcawG79Z",
+      reference: new Date().toISOString(),
+      amount: 1000,
+      currency: "NGN",
+      customer: {
+        name: `${userData?.first_name} ${userData?.last_name}`,
+        email: userData?.email,
+      },
+      onSuccess: function (data) {
+        // Handle when payment is successful
+        mutate({});
+      },
+      onFailed: function () {
+        toast.error("Payment not successful");
+      },
+      // notification_url: "https://example.com/webhook"
+    });
+  };
 
   return (
     <Box p={{ base: "2", md: "8" }}>
@@ -95,10 +128,18 @@ const Content = () => {
                   skeletonHeight="8"
                   w="80px"
                 />
-              ) : (
+              ) : userData?.subscribed ? (
                 <Link target="_blank" color="teal.500" href={data?.doc}>
                   View Document
                 </Link>
+              ) : (
+                <Button
+                  onClick={payKorapay}
+                  isLoading={suscribeLoading}
+                  colorScheme="teal"
+                >
+                  Subscribe
+                </Button>
               )}
             </Box>
           </Box>
