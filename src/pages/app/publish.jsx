@@ -29,7 +29,7 @@ const Publish = () => {
           <AddIcon boxSize={3} mr="2" /> Publish Content
         </Button>
       </Box>
-      <Box mt="14" px="8">
+      <Box mt="14" px={{ base: "1", lg: "8"}}>
         <Heading fontSize="xl" mb="4">
           My Books
         </Heading>
