@@ -4,24 +4,28 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  Link,
   Stack,
 } from "@chakra-ui/react";
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, Link as ReactLink } from "react-router-dom";
 
 const AppLayout = () => {
+  const navigate = useNavigate();
+
   return (
     <Box maxW="1240" mx="auto" py="6">
       <Flex justifyContent="space-between" alignItems="center">
         <Heading as="h6" size="md">
-          Readars
+          <Link as={ReactLink} _hover={{ textDecoration: "none" }} to="/">
+            Readars
+          </Link>
         </Heading>
         <Stack direction="row" spacing={4} align="center">
-          <Button colorScheme="teal">Publish Content</Button>
-          <Button
-            colorScheme="teal"
-            variant="outline"
-          >
+          <Button colorScheme="teal" onClick={() => navigate("/app/catalogue")}>
+            Catalogue
+          </Button>
+          <Button colorScheme="teal" variant="outline">
             Logout
           </Button>
         </Stack>
