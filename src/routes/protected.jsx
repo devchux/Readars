@@ -17,7 +17,7 @@ const Protected = ({ children }) => {
 
   if (canAccess === null) return <div />;
 
-  if (!canAccess) return <Navigate to="/auth" replace />;
+//   if (!canAccess) return <Navigate to="/auth" replace />;
 
   return children;
 };
