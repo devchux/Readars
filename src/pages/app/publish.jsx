@@ -42,7 +42,6 @@ const Publish = () => {
           gap="8"
         >
           <Feed
-            isLoading
             id="1"
             title="Things Fall Apart"
             author="Chinua Achebe"
