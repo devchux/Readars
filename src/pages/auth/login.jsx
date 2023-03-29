@@ -87,6 +87,8 @@ const Login = () => {
           type="submit"
           isLoading={isLoading}
           colorScheme="teal"
+          display="block"
+          w="full"
         >
           Login
         </Button>

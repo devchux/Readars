@@ -6,23 +6,27 @@ import {
   FormErrorMessage,
   Input,
   Link,
+  Select,
   Text,
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-formid";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import validator from "validator";
 import { Link as ReactLink, useNavigate } from "react-router-dom";
 import { useApp } from "../../hooks/useApp";
 
 const Register = () => {
-  const { register, error } = useApp();
+  const { register, getBanks } = useApp();
   const navigate = useNavigate();
-  const { handleSubmit, getFieldProps, errors } = useForm({
+  const { handleSubmit, getFieldProps, errors, setFieldValue } = useForm({
     defaultValues: {
       first_name: "",
       last_name: "",
       email: "",
+      bank_code: "",
+      bank_account_number: "",
+      bank_name: "",
       password: "",
       confirm_password: "",
     },
@@ -36,6 +40,12 @@ const Register = () => {
       },
       last_name: {
         required: true,
+      },
+      bank_code: {
+        required: true || "Select a bank",
+      },
+      bank_account_number: {
+        required: true || "Account number is required",
       },
       password: {
         required: (val) => !!val || "Password is required",
@@ -58,7 +68,7 @@ const Register = () => {
     },
   });
 
-  console.log(isLoading)
+  const { data: banks } = useQuery(["BANKS"], () => getBanks());
 
   const onSubmit = (data) => mutate(data);
 
@@ -68,6 +78,7 @@ const Register = () => {
       onSubmit={handleSubmit(onSubmit)}
       direction="column"
       gap="5"
+      mb="12"
     >
       <FormControl isInvalid={!!errors.first_name}>
         <Text>First Name</Text>
@@ -99,6 +110,34 @@ const Register = () => {
           {...getFieldProps("email")}
         />
         {errors.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
+      </FormControl>
+      <FormControl isInvalid={!!errors.bank_code}>
+        <Text>Bank</Text>
+        <Select placeholder="Select bank">
+          {banks?.data?.map((bank) => (
+            <option key={bank.code} value={bank}>
+              {bank.name}
+            </option>
+          ))}
+        </Select>
+        {errors.bank_code && (
+          <FormErrorMessage>{errors.bank_code}</FormErrorMessage>
+        )}
+      </FormControl>
+      <FormControl isInvalid={!!errors.bank_account_number}>
+        <Text>Bank Account Number</Text>
+        <Input
+          type="text"
+          placeholder="Enter Bank Account Number"
+          onChange={({ target: { value } }) => {
+            if (Number.isNaN(Number(value))) return;
+
+            setFieldValue("bank_account_number", value);
+          }}
+        />
+        {errors.bank_account_number && (
+          <FormErrorMessage>{errors.bank_account_number}</FormErrorMessage>
+        )}
       </FormControl>
       <FormControl isInvalid={!!errors.password}>
         <Text>Password</Text>
@@ -134,6 +173,8 @@ const Register = () => {
         <Button
           type="submit"
           isLoading={isLoading}
+          display="block"
+          w="full"
           colorScheme="teal"
         >
           Register
