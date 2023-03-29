@@ -23,15 +23,23 @@ const Content = () => {
   const userStorage = localStorage.getItem("user");
   const userData = userStorage ? JSON.parse(userStorage) : null;
 
-  const { data, isLoading } = useQuery(["BOOKS", id], () => getBook(id), {
-    onError(err) {
-      errorHandler(err);
-    },
-  });
+  const { data, isLoading, refetch } = useQuery(
+    ["BOOKS", id],
+    () => getBook(id),
+    {
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
 
   const { mutate, isLoading: suscribeLoading } = useMutation(subscribe, {
     onSuccess() {
-      localStorage.setItem('user', JSON.stringify({ ...userData, is_subscribed: true }));
+      refetch();
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...userData, is_subscribed: true })
+      );
       toast.success("User is suscribed");
     },
     onError(err) {
@@ -129,7 +137,7 @@ const Content = () => {
                   skeletonHeight="8"
                   w="80px"
                 />
-              ) : userData?.subscribed ? (
+              ) : userData?.is_subscribed ? (
                 <Link target="_blank" color="teal.500" href={data?.doc}>
                   View Document
                 </Link>
