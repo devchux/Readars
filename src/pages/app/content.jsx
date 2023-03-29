@@ -31,7 +31,7 @@ const Content = () => {
 
   const { mutate, isLoading: suscribeLoading } = useMutation(subscribe, {
     onSuccess() {
-      localStorage.setItem('user', { ...userData, subscribed: true });
+      localStorage.setItem('user', JSON.stringify({ ...userData, is_subscribed: true }));
       toast.success("User is suscribed");
     },
     onError(err) {
