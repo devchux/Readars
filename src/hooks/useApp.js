@@ -6,7 +6,23 @@ export const useApp = () => {
     const navigate = useNavigate();
   const backendAPI = "https://readers-api.onrender.com/api/v1";
 
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
   const errorHandler = (error, message) => {
+    console.log(error.response)
     let res = message || "An error occurred";
 
     return toast.error(res);
@@ -104,5 +120,6 @@ export const useApp = () => {
     getBooks,
     getBook,
     logout,
+    convertBase64,
   };
 };

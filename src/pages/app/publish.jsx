@@ -18,10 +18,39 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
+import { useForm } from "react-formid";
+import { useMutation } from "react-query";
+import { toast } from "react-toastify";
 import Feed from "../../components/cards/feed";
+import { useApp } from "../../hooks/useApp";
 
 const Publish = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { createBook, errorHandler, convertBase64 } = useApp();
+
+  const { getFieldProps, setFieldValue, inputs } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      doc: null,
+      thumbnail: null,
+    },
+  });
+
+  const { mutate, isLoading } = useMutation(createBook, {
+    onSuccess() {
+      toast.success("Book has been added");
+      onClose();
+    },
+    onError(err) {
+      errorHandler(err);
+      onClose();
+    },
+  });
+
+  const onSubmit = () => {
+    mutate(inputs);
+  };
 
   return (
     <Box p="8">
@@ -30,7 +59,7 @@ const Publish = () => {
           <AddIcon boxSize={3} mr="2" /> Publish Content
         </Button>
       </Box>
-      <Box mt="14" px={{ base: "1", lg: "8"}}>
+      <Box mt="14" px={{ base: "1", lg: "8" }}>
         <Heading fontSize="xl" mb="4">
           Recent Books
         </Heading>
@@ -94,25 +123,49 @@ const Publish = () => {
           <ModalBody>
             <Box mb="4">
               <Text mb="2">Book Title</Text>
-              <Input type="text" placeholder="Enter Book Title" />
+              <Input
+                type="text"
+                placeholder="Enter Book Title"
+                {...getFieldProps("title")}
+              />
             </Box>
             <Box mb="4">
               <Text mb="2">Description</Text>
-              <Textarea />
+              <Textarea {...getFieldProps("description")} />
             </Box>
             <Box mb="4">
               <Text mb="2">Book Thumbnail</Text>
-              <input type="file" />
+              <input
+                type="file"
+                onChange={async ({ target: { files } }) => {
+                  const file = files[0];
+                  const base64 = await convertBase64(file);
+                  setFieldValue("thumbnail", base64);
+                }}
+              />
             </Box>
             <Box mb="4">
               <Text mb="2">Book PDF</Text>
-              <input type="file" />
+              <input
+                type="file"
+                onChange={async ({ target: { files } }) => {
+                  const file = files[0];
+                  const base64 = await convertBase64(file);
+                  setFieldValue("doc", base64);
+                }}
+              />
             </Box>
           </ModalBody>
           <ModalFooter>
             <Stack direction="row" spacing={4} align="center">
               <Button onClick={onClose}>Close</Button>
-              <Button colorScheme="teal">Publish Book</Button>
+              <Button
+                colorScheme="teal"
+                isLoading={isLoading}
+                onClick={onSubmit}
+              >
+                Publish Book
+              </Button>
             </Stack>
           </ModalFooter>
         </ModalContent>
