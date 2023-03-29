@@ -11,10 +11,21 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { useApp } from "../../hooks/useApp";
 
-const Content = ({ isLoading }) => {
+const Content = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { getBook, errorHandler } = useApp();
+
+  const { data, isLoading } = useQuery(["BOOKS", id], () => getBook(id), {
+    onError(err) {
+      errorHandler(err);
+    },
+  });
+
   return (
     <Box p={{ base: "2", md: "8" }}>
       <Box>
@@ -39,7 +50,7 @@ const Content = ({ isLoading }) => {
               w="100%"
               h="100%"
               objectFit="cover"
-              src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
+              src={data?.thumbnail}
               alt=""
             />
           )}
@@ -50,9 +61,11 @@ const Content = ({ isLoading }) => {
           ) : (
             <>
               <Heading fontSize="3xl" mb="4">
-                Things Fall Apart
+                {data?.title}
               </Heading>
-              <Text>By Chinua Achebe</Text>
+              <Text>
+                By {data?.author?.first_name} {data?.last_name}
+              </Text>
             </>
           )}
           <Box mt={{ base: "8", md: "32" }}>
@@ -72,11 +85,7 @@ const Content = ({ isLoading }) => {
             {isLoading ? (
               <SkeletonText noOfLines={4} spacing="4" skeletonHeight="3" />
             ) : (
-              <Text noOfLines={10}>
-                This sofa is perfect for modern tropical spaces, baroque
-                inspired spaces, earthy toned spaces and for people who love a
-                chic design with a sprinkle of vintage design.
-              </Text>
+              <Text noOfLines={10}>{data?.description}</Text>
             )}
             <Box mt="16">
               {isLoading ? (
@@ -87,7 +96,9 @@ const Content = ({ isLoading }) => {
                   w="80px"
                 />
               ) : (
-                <Link target="_blank" color="teal.500" href="https://google.com/lol">View Document</Link>
+                <Link target="_blank" color="teal.500" href={data?.doc}>
+                  View Document
+                </Link>
               )}
             </Box>
           </Box>

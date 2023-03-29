@@ -1,8 +1,22 @@
-import { Box, Flex, Grid } from "@chakra-ui/react";
+import { Box, Flex, Grid, Text } from "@chakra-ui/react";
 import React from "react";
+import { useQuery } from "react-query";
 import Feed from "../../components/cards/feed";
+import { useApp } from "../../hooks/useApp";
 
 const Home = () => {
+  const { getBooks, errorHandler } = useApp();
+  const { data: books, isLoading: loadingBooks } = useQuery(
+    ["BOOKS"],
+    getBooks,
+    {
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
+
+  console.log(books);
   return (
     <Box mt="14" px="8">
       <Grid
@@ -13,49 +27,30 @@ const Home = () => {
         }}
         gap="8"
       >
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
-        <Feed
-          id="1"
-          title="Things Fall Apart"
-          author="Chinua Achebe"
-          summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-          thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        />
+        {books?.result?.map((book) => (
+          <Feed
+            key={book.id}
+            id={book?.id}
+            title={book?.title}
+            author={book?.author?.first_name + " " + book?.author?.last_name}
+            summary={book?.description}
+            thumbnail={book?.thumbnail}
+          />
+        ))}
+        {loadingBooks && (
+          <>
+            <Feed isLoading={loadingBooks} />
+            <Feed isLoading={loadingBooks} />
+            <Feed isLoading={loadingBooks} />
+            <Feed isLoading={loadingBooks} />
+          </>
+        )}
       </Grid>
+      {!loadingBooks && books?.result?.length === 0 ? (
+        <Text textAlign="center" my="8">
+          No books available
+        </Text>
+      ) : null}
     </Box>
   );
 };

@@ -19,16 +19,16 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-formid";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import Feed from "../../components/cards/feed";
 import { useApp } from "../../hooks/useApp";
 
 const Publish = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { createBook, errorHandler, convertBase64 } = useApp();
+  const { isOpen, onOpen, onClose: closeModal } = useDisclosure();
+  const { createBook, errorHandler, convertBase64, getBooks } = useApp();
 
-  const { getFieldProps, setFieldValue, inputs } = useForm({
+  const { getFieldProps, setFieldValue, inputs, reset } = useForm({
     defaultValues: {
       title: "",
       description: "",
@@ -37,6 +37,21 @@ const Publish = () => {
     },
   });
 
+  const onClose = () => {
+    reset();
+    closeModal();
+  };
+
+  const { data: books, isLoading: loadingBooks } = useQuery(
+    ["BOOKS"],
+    getBooks,
+    {
+      onError(err) {
+        errorHandler(err);
+      },
+    }
+  );
+
   const { mutate, isLoading } = useMutation(createBook, {
     onSuccess() {
       toast.success("Book has been added");
@@ -44,7 +59,6 @@ const Publish = () => {
     },
     onError(err) {
       errorHandler(err);
-      onClose();
     },
   });
 
@@ -71,49 +85,30 @@ const Publish = () => {
           }}
           gap="8"
         >
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
-          <Feed
-            id="1"
-            title="Things Fall Apart"
-            author="Chinua Achebe"
-            summary="This sofa is perfect for modern tropical spaces, baroque inspired spaces, earthy toned spaces and for people who love a chic design with a sprinkle of vintage design."
-            thumbnail="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-          />
+          {books?.result?.map((book) => (
+            <Feed
+              key={book.id}
+              id={book?.id}
+              title={book?.title}
+              author={book?.author?.first_name + " " + book?.author?.last_name}
+              summary={book?.description}
+              thumbnail={book?.thumbnail}
+            />
+          ))}
+          {loadingBooks && (
+            <>
+              <Feed isLoading={loadingBooks} />
+              <Feed isLoading={loadingBooks} />
+              <Feed isLoading={loadingBooks} />
+              <Feed isLoading={loadingBooks} />
+            </>
+          )}
         </Grid>
+        {!loadingBooks && books?.result?.length === 0 ? (
+          <Text textAlign="center" my="8">
+            No books available
+          </Text>
+        ) : null}
       </Box>
       <Modal onClose={onClose} size="xl" isOpen={isOpen}>
         <ModalOverlay />
@@ -137,6 +132,7 @@ const Publish = () => {
               <Text mb="2">Book Thumbnail</Text>
               <input
                 type="file"
+                accept="image/png, image/gif, image/jpeg"
                 onChange={async ({ target: { files } }) => {
                   const file = files[0];
                   const base64 = await convertBase64(file);
@@ -148,6 +144,7 @@ const Publish = () => {
               <Text mb="2">Book PDF</Text>
               <input
                 type="file"
+                ccept="application/pdf"
                 onChange={async ({ target: { files } }) => {
                   const file = files[0];
                   const base64 = await convertBase64(file);
