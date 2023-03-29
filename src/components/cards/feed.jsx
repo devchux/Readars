@@ -22,7 +22,7 @@ const Feed = ({ title, author, thumbnail, id, summary, isLoading }) => {
       maxW={{ base: "100%", md: "md" }}
       overflow="hidden"
       cursor="pointer"
-      onClick={() => navigate(`/app/content/${id}`)}
+      onClick={() => !isLoading && navigate(`/app/content/${id}`)}
     >
       <CardHeader pb="0">
         <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
