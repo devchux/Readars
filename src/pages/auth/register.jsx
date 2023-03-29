@@ -19,7 +19,14 @@ import { useApp } from "../../hooks/useApp";
 const Register = () => {
   const { register, getBanks } = useApp();
   const navigate = useNavigate();
-  const { handleSubmit, getFieldProps, errors, setFieldValue } = useForm({
+  const {
+    handleSubmit,
+    getFieldProps,
+    errors,
+    setFieldValue,
+    inputs,
+    setInputs,
+  } = useForm({
     defaultValues: {
       first_name: "",
       last_name: "",
@@ -70,6 +77,8 @@ const Register = () => {
 
   const { data: banks } = useQuery(["BANKS"], () => getBanks());
 
+  console.log(banks);
+
   const onSubmit = (data) => mutate(data);
 
   return (
@@ -113,9 +122,19 @@ const Register = () => {
       </FormControl>
       <FormControl isInvalid={!!errors.bank_code}>
         <Text>Bank</Text>
-        <Select placeholder="Select bank">
+        <Select
+          placeholder="Select bank"
+          onChange={({ target: { value } }) => {
+            const i = JSON.parse(value)
+            setInputs({
+              ...inputs,
+              bank_name: i.name,
+              bank_code: i.code,
+            });
+          }}
+        >
           {banks?.data?.map((bank) => (
-            <option key={bank.code} value={bank}>
+            <option key={bank.code} value={JSON.stringify(bank)}>
               {bank.name}
             </option>
           ))}
@@ -129,6 +148,7 @@ const Register = () => {
         <Input
           type="text"
           placeholder="Enter Bank Account Number"
+          value={inputs.bank_account_number}
           onChange={({ target: { value } }) => {
             if (Number.isNaN(Number(value))) return;
 
