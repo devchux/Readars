@@ -134,7 +134,6 @@ const Register = () => {
         <Button
           type="submit"
           isLoading={isLoading}
-          disabled={isLoading}
           colorScheme="teal"
         >
           Register

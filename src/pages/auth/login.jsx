@@ -86,7 +86,6 @@ const Login = () => {
         <Button
           type="submit"
           isLoading={isLoading}
-          disabled={isLoading}
           colorScheme="teal"
         >
           Login
